@@ -1,11 +1,11 @@
-nombre:  Primer  flujo de trabajo 
-en:  
-  workflow_dispatch:   # Permite la activación manual de este flujo de trabajo 
-trabajos: 
-  first-job: 
-    runs-on:  ubuntu-latest    # Entorno del ejecutor proporcionado por GitHub 
-    pasos: 
-      -  nombre:  Imprimir  saludo 
-        ejecutar:  echo  "¡Hola mundo!" 
-      -  nombre:  Imprimir  despedida 
-        ejecutar:  echo  "¡Hecho - ¡Adiós!"
+name: First Workflow
+on: 
+  workflow_dispatch:  # Allows manual triggering of this workflow
+jobs:
+  first-job:
+    runs-on: ubuntu-latest   # Runner environment provided by GitHub
+    steps:
+      - name: Print Greeting
+        run: echo "Hello World!"
+      - name: Print Goodbye
+        run: echo "Done - Bye!"
