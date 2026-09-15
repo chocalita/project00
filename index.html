@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Sistema Solar para Niños - Guía Educativa Interactiva</title>
+  
+  <style>
+    /* ==========================================================================
+       VARIABLES GLOBALES Y TEMA DEL ESPACIO PROFUNDO
+       Diseño responsivo, oscuro y optimizado para niños de 10 a 11 años.
+       Paleta de alto contraste, tipografía limpia del sistema y esquinas redondeadas.
+       ========================================================================== */
+    :root {
+      --bg-dark: #050814;
+      --bg-card: #0c1322;
+      --bg-card-hover: #162032;
+      --border-color: #24344d;
+      --border-accent: #38bdf8;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-highlight: #38bdf8;
+      --accent-sun: #fbbf24;
+      --color-correct: #10b981;
+      --color-incorrect: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .app-container {
+      width: 100%;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 1. ENCABEZADO ESPACIAL */
+    header.main-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-titles h1 {
+      font-size: clamp(1.4rem, 2.5vw, 2.1rem);
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .header-titles h1 span.emoji-badge {
+      display: inline-block;
+      filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+    }
+
+    .header-titles p {
+      color: var(--text-secondary);
+      font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+      margin-top: 4px;
+    }
+
+    .header-badge {
+      background-color: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--text-highlight);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 2. SECCIÓN SUPERIOR: SIMULADOR Y TARJETA DE INFORMACIÓN */
+    .simulation-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @media (min-width: 960px) {
+      .simulation-section {
+        display: grid;
+        grid-template-columns: 7fr 3fr;
+        align-items: stretch;
+      }
+    }
+
+    /* COLUMNA IZQUIERDA: LIENZO Y CONTROLES (70%) */
+    .canvas-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      background-color: #030712;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      min-height: 380px;
+      max-height: 600px;
+      width: 100%;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas#solarCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .canvas-overlay-hint {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background-color: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 3. BARRA DE CONTROLES INFERIOR DEL LIENZO */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+
+    .controls-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button.btn-action {
+      background-color: #1e293b;
+      border: 1px solid #475569;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      min-height: 40px;
+    }
+
+    button.btn-action:hover {
+      background-color: #334155;
+      border-color: var(--border-accent);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    button.btn-action:active {
+      transform: translateY(0);
+    }
+
+    button.btn-action.active {
+      background-color: rgba(56, 189, 248, 0.2);
+      border-color: var(--text-highlight);
+      color: var(--text-highlight);
+    }
+
+    /* BARRA DE ACCESO RÁPIDO A PLANETAS */
+    .planet-selector-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 0;
+      scrollbar-width: thin;
+      max-width: 100%;
+    }
+
+    .planet-chip {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .planet-chip span.dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .planet-chip:hover, .planet-chip.selected {
+      background: var(--bg-card-hover);
+      border-color: var(--text-highlight);
+      color: #ffffff;
+    }
+
+    /* COLUMNA DERECHA: TARJETA DE INFORMACIÓN (30%) */
+    .side-panel-column {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow-y: auto;
+      max-height: 600px;
+      scrollbar-width: thin;
+    }
+
+    .side-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+
+    .side-panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .planet-avatar-preview {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .planet-avatar-preview.has-rings::after {
+      content: "";
+      position: absolute;
+      width: 62px;
+      height: 14px;
+      border: 2px solid rgba(226, 195, 145, 0.85);
+      border-radius: 50%;
+      transform: rotate(-20deg);
+    }
+
+    .side-panel-title-wrap h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .side-panel-title-wrap p.planet-type {
+      font-size: 0.8rem;
+      color: var(--text-highlight);
+      font-weight: 600;
+    }
+
+    button.btn-close-panel {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button.btn-close-panel:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* ESTADÍSTICAS Y DETALLES TÉCNICOS */
+    .planet-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-box.full-width {
+      grid-column: span 2;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* SECCIÓN DATOS CURIOSOS */
+    .fun-facts-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-sun);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fun-facts-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .fun-facts-list li {
+      background: rgba(30, 41, 59, 0.4);
+      border-left: 3px solid var(--border-accent);
+      padding: 8px 12px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.45;
+    }
+
+    /* ESTADO INICIAL / VACÍO DEL PANEL LATERAL */
+    .empty-panel-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      min-height: 280px;
+      color: var(--text-secondary);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ==========================================================================
+       4. SECCIÓN INFERIOR: QUIZ EDUCATIVO "¡DESAFÍO ESPACIAL!" (100% ANCHO)
+       ========================================================================== */
+    .quiz-section {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .quiz-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      gap: 12px;
+    }
+
+    .quiz-title-wrap h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quiz-title-wrap p {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+
+    .quiz-score-badge {
+      background-color: #1e293b;
+      border: 1px solid var(--border-accent);
+      padding: 8px 18px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .score-number {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent-sun);
+    }
+
+    /* PROGRESO DEL QUIZ */
+    .quiz-progress-track {
+      width: 100%;
+      height: 8px;
+      background-color: #1e293b;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #10b981);
+      transition: width 0.3s ease;
+    }
+
+    /* CONTENEDOR DE LAS 10 PREGUNTAS ACTIVAS */
+    .questions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .question-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .question-card.answered-correct {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .question-card.answered-incorrect {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .question-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .question-number {
+      background: #1e293b;
+      color: var(--text-highlight);
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      flex-shrink: 0;
+    }
+
+    .question-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.4;
+    }
+
+    /* OPCIONES DE RESPUESTA (4 OPCIONES) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 640px) {
+      .options-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    button.option-btn {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      min-height: 48px;
+      width: 100%;
+    }
+
+    button.option-btn:hover:not(:disabled) {
+      background-color: #334155;
+      border-color: var(--border-accent);
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    button.option-btn .option-letter {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ESTADOS DE RETROALIMENTACIÓN INMEDIATA */
+    button.option-btn.correct-choice {
+      background-color: rgba(16, 185, 129, 0.25) !important;
+      border-color: var(--color-correct) !important;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    button.option-btn.correct-choice .option-letter {
+      background-color: var(--color-correct);
+      color: #ffffff;
+    }
+
+    button.option-btn.wrong-choice {
+      background-color: rgba(239, 68, 68, 0.25) !important;
+      border-color: var(--color-incorrect) !important;
+      color: #fca5a5 !important;
+      text-decoration: line-through;
+    }
+
+    button.option-btn.wrong-choice .option-letter {
+      background-color: var(--color-incorrect);
+      color: #ffffff;
+    }
+
+    button.option-btn:disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    /* CAJA DE EXPLICACIÓN BASADA EN LAS FUENTES */
+    .explanation-box {
+      margin-top: 6px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .explanation-box.correct {
+      display: block;
+      background: rgba(16, 185, 129, 0.12);
+      border-left: 4px solid var(--color-correct);
+      color: #a7f3d0;
+    }
+
+    .explanation-box.incorrect {
+      display: block;
+      background: rgba(239, 68, 68, 0.12);
+      border-left: 4px solid var(--color-incorrect);
+      color: #fecaca;
+    }
+
+    .explanation-box strong {
+      display: inline-block;
+      margin-bottom: 2px;
+      font-size: 0.88rem;
+    }
+
+    /* PIE DE QUIZ Y BOTÓN REINTENTAR */
+    .quiz-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      gap: 16px;
+    }
+
+    .quiz-feedback-banner {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    button.btn-retry {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    button.btn-retry:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+
+    /* PIE DE PÁGINA */
+    footer.app-footer {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container" id="appContainer">
+    
+    <!-- 1. ENCABEZADO PRINCIPAL -->
+    <header class="main-header" id="mainHeader">
+      <div class="header-titles">
+        <h1>
+          <span class="emoji-badge" aria-hidden="true">🪐</span>
+          El Sistema Solar para Niños
+        </h1>
+        <p>Explora los 8 planetas, descubre sus secretos y pon a prueba tus conocimientos espaciales</p>
+      </div>
+      <div class="header-badge" id="headerBadge">
+        <span>🚀</span> Misión Educativa 100% Offline
+      </div>
+    </header>
+
+    <!-- 2. SECCIÓN SUPERIOR: SIMULADOR 60FPS (70%) + TARJETA DE INFORMACIÓN (30%) -->
+    <section class="simulation-section" id="simulationSection">
+      
+      <!-- COLUMNA IZQUIERDA: LIENZO Y BARRA DE CONTROLES -->
+      <div class="canvas-column" id="canvasColumn">
+        
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <canvas id="solarCanvas" width="900" height="560"></canvas>
+          <div class="canvas-overlay-hint" id="canvasHint">
+            💡 Haz clic en cualquier planeta o en el Sol para explorarlo
+          </div>
+        </div>
+
+        <!-- 3. BARRA DE CONTROLES PRINCIPALES -->
+        <div class="controls-bar" id="controlsBar">
+          <div class="controls-group">
+            <button class="btn-action" id="btnTogglePlay" title="Pausar o reanudar el movimiento orbital">
+              <span id="btnPlayIcon">⏸️</span>
+              <span id="btnPlayText">Pausar / Reanudar</span>
+            </button>
+            <button class="btn-action active" id="btnToggleLabels" title="Mostrar u ocultar los nombres de los planetas">
+              <span id="btnLabelsIcon">🏷️</span>
+              <span id="btnLabelsText">Mostrar / Ocultar Etiquetas</span>
+            </button>
+          </div>
+
+          <!-- SELECTOR RÁPIDO DE PLANETAS -->
+          <div class="planet-selector-bar" id="planetSelectorBar">
+            <!-- Rellenado dinámicamente con JavaScript -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: PANEL LATERAL ("TARJETA DE INFORMACIÓN") -->
+      <aside class="side-panel-column" id="sidePanel" aria-live="polite">
+        
+        <!-- ESTADO INICIAL CUANDO NO HAY PLANETA SELECCIONADO -->
+        <div class="empty-panel-state" id="emptyPanelState">
+          <div class="empty-icon">🛸</div>
+          <h3>¡Elige un planeta!</h3>
+          <p>Haz clic sobre cualquier cuerpo celeste en la simulación o usa los botones para ver su ficha técnica completa y datos curiosos.</p>
+        </div>
+
+        <!-- CONTENIDO DINÁMICO DE LA FICHA TÉCNICA -->
+        <div id="planetDetailContent" style="display: none;">
+          <div class="side-panel-header">
+            <div class="side-panel-title-wrap">
+              <div class="planet-avatar-preview" id="planetAvatarPreview"></div>
+              <div>
+                <h2 id="planetDetailName">Nombre</h2>
+                <p class="planet-type" id="planetDetailType">Tipo</p>
+              </div>
+            </div>
+            <button class="btn-close-panel" id="btnClosePanel" title="Cerrar ficha y reanudar">
+              ✕ Cerrar
+            </button>
+          </div>
+
+          <div class="planet-stats-grid" id="planetStatsGrid">
+            <div class="stat-box">
+              <span class="stat-label">Distancia / Orden</span>
+              <span class="stat-value" id="statDistance">-</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Diámetro / Tamaño</span>
+              <span class="stat-value" id="statSize">-</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Año (Órbita)</span>
+              <span class="stat-value" id="statYear">-</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Día (Rotación)</span>
+              <span class="stat-value" id="statDay">-</span>
+            </div>
+            <div class="stat-box full-width">
+              <span class="stat-label">Satélites</span>
+              <span class="stat-value" id="statMoons">-</span>
+            </div>
+          </div>
+
+          <h3 class="fun-facts-title">
+            <span>✨</span> Datos Curiosos
+          </h3>
+          <ul class="fun-facts-list" id="planetFunFactsList">
+            <!-- Elementos li generados dinámicamente -->
+          </ul>
+        </div>
+
+      </aside>
+
+    </section>
+
+    <!-- 4. SECCIÓN INFERIOR: QUIZ "¡DESAFÍO ESPACIAL!" (100% ANCHO) -->
+    <section class="quiz-section" id="quizSection">
+      
+      <div class="quiz-header">
+        <div class="quiz-title-wrap">
+          <h2><span>🚀</span> ¡Desafío Espacial!</h2>
+          <p>Selección aleatoria de 10 preguntas extraídas de nuestro banco astronómico de 50 preguntas</p>
+        </div>
+        <div class="quiz-score-badge" id="quizScoreBadge">
+          <span class="score-label">Aciertos:</span>
+          <span class="score-number" id="scoreValueDisplay">0 / 10</span>
+        </div>
+      </div>
+
+      <div class="quiz-progress-track">
+        <div class="quiz-progress-fill" id="quizProgressFill"></div>
+      </div>
+
+      <div class="questions-grid" id="questionsContainer">
+        <!-- Las 10 preguntas aleatorias se renderizan dinámicamente con JS -->
+      </div>
+
+      <div class="quiz-footer" id="quizFooter">
+        <div class="quiz-feedback-banner" id="quizFinalFeedback">
+          Responde a las 10 preguntas para obtener tu calificación estelar.
+        </div>
+        <button class="btn-retry" id="btnRetryQuiz">
+          <span>🔄</span> Reintentar (Nuevas 10 preguntas)
+        </button>
+      </div>
+
+    </section>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="app-footer">
+      <p>Aplicación educativa creada para niños de 10 a 11 años. 100% offline y estrictamente basada en datos astronómicos fundamentales.</p>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT VANILLA: SIMULACIÓN EN CANVAS Y LÓGICA DEL QUIZ (50 PREGUNTAS)
+       ========================================================================== -->
+  <script>
+    /**
+     * ============================================================================
+     * CONJUNTO DE DATOS ESTRICTOS DEL SISTEMA SOLAR
+     * Datos inmutables proporcionados en los requerimientos del proyecto.
+     * ============================================================================
+     */
+    const SOLAR_SYSTEM_DATA = {
+      sun: {
+        id: "sun",
+        name: "El Sol",
+        type: "Estrella Central",
+        order: "Centro del Sistema Solar",
+        size: "El elemento más grande e importante (estrella).",
+        year: "No aplica (Gira en la Vía Láctea)",
+        day: "Aprox. 25 a 35 días terrestres",
+        moons: "No tiene satélites (los planetas orbitan alrededor de él).",
+        color: "#fbbf24",
+        glowColor: "rgba(251, 191, 36, 0.4)",
+        radius: 20,
+        orbitRadius: 0,
+        speed: 0,
+        funFacts: [
+          "Su núcleo está a una temperatura de 15,000,000 ºC y su capa exterior a unos 5,000 ºC.",
+          "Está compuesto de hidrógeno, helio, oxígeno, hierro y carbono; es la principal fuente de energía de la Tierra.",
+          "Es el único cuerpo celeste del sistema solar que emite y brilla con luz propia."
+        ]
+      },
+      planets: [
+        {
+          id: "mercurio",
+          name: "Mercurio",
+          type: "Terrestre (rocoso)",
+          order: "1º planeta más cercano al Sol.",
+          size: "El planeta más pequeño del sistema solar.",
+          year: "Tarda 88 días terrestres en dar la vuelta al Sol.",
+          day: "Rotación muy lenta; un día equivale a 58 días terrestres.",
+          moons: "No tiene satélites.",
+          color: "#a5a5a5",
+          radius: 5,
+          orbitRadius: 46,
+          // Velocidad angular en radianes por fotograma (~60 FPS)
+          speed: 0.035,
+          funFacts: [
+            "Su atmósfera se compone únicamente por trazas de hidrógeno y helio.",
+            "Su temperatura es muy elevada, alcanzando unos 425ºC debido a su cercanía al Sol.",
+            "Sus años son extremadamente cortos, pero sus días son extremadamente largos."
+          ]
+        },
+        {
+          id: "venus",
+          name: "Venus",
+          type: "Terrestre (rocoso)",
+          order: "2º planeta más cercano al Sol.",
+          size: "Muy parecido a la Tierra en masa, tamaño y densidad.",
+          year: "Tarda 225 días terrestres en dar la vuelta al Sol.",
+          day: "Es el más lento en girar sobre sí mismo; un día equivale a 116 días terrestres.",
+          moons: "No tiene satélites.",
+          color: "#e3bb76",
+          radius: 7.5,
+          orbitRadius: 72,
+          speed: 0.024,
+          funFacts: [
+            "Es el planeta más caluroso de todo el sistema solar debido a que los gases de su atmósfera atrapan el calor.",
+            "Junto con Urano, gira al revés (sentido de rotación diferente al resto).",
+            "Su atmósfera está compuesta principalmente por CO2, nitrógeno y agua."
+          ]
+        },
+        {
+          id: "tierra",
+          name: "Tierra",
+          type: "Terrestre (rocoso)",
+          order: "3º planeta en distancia al Sol.",
+          size: "El planeta rocoso de mayor tamaño.",
+          year: "Tarda 365 días en dar la vuelta al Sol.",
+          day: "Tarda 1 día (24 horas) en dar una vuelta sobre sí misma.",
+          moons: "1 satélite llamado Luna (ciclo de 28 días, muestra siempre la misma cara y tiene 4 fases).",
+          color: "#2b82c9",
+          radius: 8,
+          orbitRadius: 104,
+          speed: 0.018,
+          hasMoon: true,
+          funFacts: [
+            "Es el único planeta del Sistema Solar donde se ha encontrado vida y está habitado.",
+            "El 70% de la superficie de nuestro planeta está cubierta de agua.",
+            "Su atmósfera de nitrógeno, oxígeno y argón permite regular la temperatura para albergar vida."
+          ]
+        },
+        {
+          id: "marte",
+          name: "Marte",
+          type: "Terrestre (rocoso)",
+          order: "4º planeta en cercanía al Sol y el último de los planetas rocosos.",
+          size: "Pequeño tamaño.",
+          year: "Sus días y años son muy parecidos a los de la Tierra.",
+          day: "Aproximadamente 24 horas y 37 minutos.",
+          moons: "2 satélites llamados Fobos y Deimos.",
+          color: "#c1440e",
+          radius: 6,
+          orbitRadius: 136,
+          speed: 0.014,
+          funFacts: [
+            "Se le conoce como 'el planeta rojo' debido a que su superficie contiene óxido de hierro.",
+            "Su atmósfera se compone principalmente de dióxido de carbono.",
+            "Su temperatura es sumamente baja (como 100 veces más baja que en la Tierra). Tiene hielo, pero no agua líquida por el frío."
+          ]
+        },
+        {
+          id: "jupiter",
+          name: "Júpiter",
+          type: "Gaseoso",
+          order: "5º planeta en cercanía al Sol.",
+          size: "El planeta más grande del sistema solar.",
+          year: "Tarda 12 años terrestres en dar la vuelta al Sol.",
+          day: "Sus días duran solo 10 horas.",
+          moons: "Tiene el mayor número de satélites conocidos: 69 descubiertos.",
+          color: "#d4a373",
+          radius: 14,
+          orbitRadius: 180,
+          speed: 0.009,
+          funFacts: [
+            "Es el planeta más antiguo de todo el sistema solar.",
+            "Está formado por hidrógeno y helio; es un cuerpo gaseoso sin una superficie definida.",
+            "Sus días de 10 horas son extremadamente rápidos en comparación con su lento año de 12 años terrestres."
+          ]
+        },
+        {
+          id: "saturno",
+          name: "Saturno",
+          type: "Gaseoso",
+          order: "6º planeta en distancia con el Sol.",
+          size: "El segundo planeta más grande del sistema solar.",
+          year: "Tarda 29 años y 167 días terrestres en dar la vuelta al Sol.",
+          day: "Sus días duran 11 horas.",
+          moons: "Tiene un gran número de satélites: 62 descubiertos.",
+          color: "#e2c391",
+          radius: 12,
+          orbitRadius: 224,
+          speed: 0.0065,
+          hasRings: true,
+          funFacts: [
+            "Es famoso por sus anillos, compuestos por una agrupación de millones de partículas que giran a su alrededor.",
+            "Su atmósfera se compone principalmente de nitrógeno, helio y metano.",
+            "Es el segundo planeta con más satélites del sistema solar."
+          ]
+        },
+        {
+          id: "urano",
+          name: "Urano",
+          type: "Gaseoso (Gigante helado)",
+          order: "7º planeta más alejado del Sol.",
+          size: "El tercer planeta más grande del sistema solar.",
+          year: "Tarda 84 años terrestres en dar la vuelta al Sol.",
+          day: "Sus días duran 17 horas.",
+          moons: "Tiene 27 satélites conocidos.",
+          color: "#aed9e0",
+          radius: 9.5,
+          orbitRadius: 264,
+          speed: 0.0045,
+          hasRings: true,
+          funFacts: [
+            "Es el planeta más frío de todos los del Sistema Solar, registrando temperaturas mínimas de hasta -244 ºC.",
+            "Su eje de rotación está tan inclinado que sus polos se sitúan donde otros planetas tienen su ecuador.",
+            "Junto con Venus, gira de forma diferente al resto de planetas (al revés)."
+          ]
+        },
+        {
+          id: "neptuno",
+          name: "Neptuno",
+          type: "Gaseoso (Gigante helado)",
+          order: "8º planeta y el más alejado del Sol.",
+          size: "Gigante de hielo y roca.",
+          year: "Tarda 165 años (exactamente 164.79) en dar la vuelta al Sol.",
+          day: "Sus días duran 16 horas.",
+          moons: "Tiene 14 satélites (su satélite más grande se llama Tritón).",
+          color: "#274690",
+          radius: 9,
+          orbitRadius: 300,
+          speed: 0.0032,
+          funFacts: [
+            "Debe su nombre al dios romano del mar debido a su hermoso color azul.",
+            "Fue el primer planeta descubierto mediante predicciones matemáticas sin ser observado directamente.",
+            "Su núcleo está compuesto de hielo y roca, y posee una atmósfera compuesta principalmente de nitrógeno."
+          ]
+        }
+      ]
+    };
+
+    /**
+     * ============================================================================
+     * BANCO DE 50 PREGUNTAS DEL QUIZ (STRICTLY GROUNDED DATASET)
+     * ============================================================================
+     */
+    const QUESTIONS_POOL_50 = [
+      {
+        id: 1,
+        question: "¿Hace cuánto tiempo se formó el Sistema Solar?",
+        options: ["1000 millones de años", "4600 millones de años", "2021 millones de años", "500 millones de años"],
+        correctIndex: 1,
+        explanation: "El Sistema Solar se formó hace unos 4600 millones de años a partir de una gran estrella."
+      },
+      {
+        id: 2,
+        question: "¿Cuál es el único cuerpo celeste de nuestro sistema solar que emite luz propia?",
+        options: ["La Luna", "Júpiter", "El Sol", "Venus"],
+        correctIndex: 2,
+        explanation: "El Sol es una gran estrella de energía y es el único cuerpo de nuestro sistema que brilla y emite su propia luz."
+      },
+      {
+        id: 3,
+        question: "¿Cuáles son los dos tipos principales de planetas que existen en el sistema solar?",
+        options: ["Cálidos y helados", "Terrestres y gaseosos", "Líquidos y rocosos", "Metálicos y gigantes"],
+        correctIndex: 1,
+        explanation: "Los planetas se dividen según su composición en terrestres (rocosos) y gaseosos."
+      },
+      {
+        id: 4,
+        question: "¿Cuáles son los cuatro primeros planetas, clasificados como de tipo terrestre o rocoso?",
+        options: ["Júpiter, Saturno, Urano y Neptuno", "Mercurio, Venus, Tierra y Marte", "Mercurio, Venus, la Luna y Ceres", "Tierra, Marte, Júpiter y Plutón"],
+        correctIndex: 1,
+        explanation: "Los cuatro primeros planetas más cercanos al Sol son rocosos: Mercurio, Venus, Tierra y Marte."
+      },
+      {
+        id: 5,
+        question: "¿De qué componentes químicos están constituidos principalmente los planetas gaseosos?",
+        options: ["Roca fundida y metales pesados", "Hielo y gases", "Polvo estelar y carbono activo", "Agua líquida y vapor denso"],
+        correctIndex: 1,
+        explanation: "Los planetas gaseosos, los más alejados del Sol, están compuestos principalmente por hielo y gases."
+      },
+      {
+        id: 6,
+        question: "¿Dónde se encuentra situado el primer cinturón de asteroides de nuestro sistema?",
+        options: ["Entre la Tierra y Marte", "Entre Marte y Júpiter", "Más allá del planeta Neptuno", "Entre Júpiter y Saturno"],
+        correctIndex: 1,
+        explanation: "El cinturón de asteroides interno se localiza entre Marte (el último planeta rocoso) y Júpiter (el primer planeta gaseoso)."
+      },
+      {
+        id: 7,
+        question: "¿Qué planeta enano podemos encontrar situado dentro de este primer cinturón de asteroides?",
+        options: ["Plutón", "Ceres", "Eris", "Makemake"],
+        correctIndex: 1,
+        explanation: "Ceres es un planeta enano que se encuentra dentro del cinturón de asteroides que está entre Marte y Júpiter."
+      },
+      {
+        id: 8,
+        question: "¿Dónde se localiza el segundo cinturón de asteroides del sistema solar?",
+        options: ["Entre Júpiter y Saturno", "Al final del sistema solar, más allá de Neptuno", "Entre el Sol y Mercurio", "Entre Venus y la Tierra"],
+        correctIndex: 1,
+        explanation: "Existe otro cinturón de asteroides situado en los límites externos del sistema solar, más allá de Neptuno."
+      },
+      {
+        id: 9,
+        question: "¿Qué planetas enanos se localizan en el cinturón de asteroides más allá de Neptuno?",
+        options: ["Mercurio, Ceres y Deimos", "Haumea, Makemake, Eris y Plutón", "Fobos, Tritón y Luna", "Júpiter, Saturno y Urano"],
+        correctIndex: 1,
+        explanation: "En el cinturón exterior se encuentran los planetas enanos Haumea, Makemake, Eris y Plutón."
+      },
+      {
+        id: 10,
+        question: "¿Hasta qué año se consideraba de manera oficial a Plutón como el noveno planeta del sistema solar?",
+        options: ["Hasta el año 2000", "Hasta el año 2006", "Hasta el año 2021", "Hasta el año 1999"],
+        correctIndex: 1,
+        explanation: "Plutón formó parte de la lista oficial de planetas hasta el año 2006, cuando pasó a clasificarse como planeta enano."
+      },
+      {
+        id: 11,
+        question: "¿Cuál es el planeta más pequeño de todo el sistema solar y el más cercano al Sol?",
+        options: ["Marte", "Mercurio", "Venus", "Urano"],
+        correctIndex: 1,
+        explanation: "Mercurio es el planeta de menor tamaño del sistema solar y es el que se ubica en primer lugar en cercanía al Sol."
+      },
+      {
+        id: 12,
+        question: "¿Por qué gases se encuentra compuesta principalmente la atmósfera del Sol?",
+        options: ["Oxígeno y nitrógeno", "Hidrógeno, helio, oxígeno, hierro y carbono", "Dióxido de carbono y vapor de agua", "Metano puro y argón"],
+        correctIndex: 1,
+        explanation: "El Sol se compone principalmente de hidrógeno, helio, oxígeno, hierro y carbono, entre otros elementos."
+      },
+      {
+        id: 13,
+        question: "¿A qué asombrosa temperatura estimada se encuentra el núcleo interno del Sol?",
+        options: ["5,000 grados centígrados", "15,000,000 de grados centígrados", "425 grados centígrados", "100,000 grados centígrados"],
+        correctIndex: 1,
+        explanation: "El núcleo del Sol es una inmensa bola de energía térmica que se encuentra a 15 millones de ºC."
+      },
+      {
+        id: 14,
+        question: "¿A qué temperatura promedio se encuentra la capa exterior del Sol?",
+        options: ["15,000,000 de grados centígrados", "5,000 grados centígrados", "425 grados centígrados", "-244 grados centígrados"],
+        correctIndex: 1,
+        explanation: "La capa externa del Sol tiene una temperatura de unos 5,000 ºC, mucho menor que la de su núcleo."
+      },
+      {
+        id: 15,
+        question: "¿Qué beneficio crucial ofrece el Sol para la vida en nuestro planeta, la Tierra?",
+        options: ["Genera tormentas magnéticas", "Supone la fuente principal de energía que con luz y calor permite la vida", "Hace que la Luna tenga sus ciclos de 28 días", "Mantiene la atmósfera libre de nitrógeno"],
+        correctIndex: 1,
+        explanation: "El Sol es la fuente principal de energía para la Tierra; su calor y luz hacen posible la vida."
+      },
+      {
+        id: 16,
+        question: "¿Cuáles son las dos formas o movimientos principales en que se desplazan los planetas?",
+        options: ["Atracción magnética y repulsión térmica", "Girar alrededor del Sol y girar sobre sí mismos (su propio eje)", "Movimiento lineal y rebote gravitacional", "Expansión atmosférica e inclinación polar"],
+        correctIndex: 1,
+        explanation: "Todos los planetas realizan dos movimientos: orbitan alrededor del Sol (traslación) y rotan sobre sí mismos (rotación)."
+      },
+      {
+        id: 17,
+        question: "¿Qué período de tiempo define una vuelta completa de un planeta sobre su propio eje?",
+        options: ["Un año", "Un día", "Un mes lunar", "Una órbita"],
+        correctIndex: 1,
+        explanation: "Un día se define exactamente como el tiempo que tarda un planeta en dar una rotación sobre su propio eje."
+      },
+      {
+        id: 18,
+        question: "¿Qué período de tiempo define una vuelta completa de un planeta en su órbita alrededor del Sol?",
+        options: ["Un día", "Un año", "Un ciclo lunar", "Una rotación"],
+        correctIndex: 1,
+        explanation: "El tiempo que le toma a un planeta dar una vuelta completa alrededor del Sol se conoce como un año."
+      },
+      {
+        id: 19,
+        question: "¿Por qué los planetas más lejanos al Sol experimentan años considerablemente más largos?",
+        options: ["Porque giran más rápido sobre sí mismos", "Porque tienen órbitas (recorridos) más largas alrededor de la estrella central", "Porque tienen más satélites que los retrasan", "Porque son gigantes compuestos de hielo y gas pesado"],
+        correctIndex: 1,
+        explanation: "Al estar más alejados del Sol, sus órbitas son mucho más largas y tardan más tiempo en completarlas."
+      },
+      {
+        id: 20,
+        question: "¿Qué gases componen principalmente la débil atmósfera de Mercurio?",
+        options: ["Nitrógeno y oxígeno", "Trazas de hidrógeno y helio", "Dióxido de carbono y vapor de agua", "Metano helado"],
+        correctIndex: 1,
+        explanation: "Al ser tan pequeño, Mercurio tiene una atmósfera muy sutil compuesta de trazas de hidrógeno y helio."
+      },
+      {
+        id: 21,
+        question: "¿A qué elevada temperatura puede llegar la superficie de Mercurio debido a su extrema cercanía al Sol?",
+        options: ["15,000,000 ºC", "425 ºC", "5,000 ºC", "100 ºC"],
+        correctIndex: 1,
+        explanation: "Por su extrema cercanía al Sol, Mercurio alcanza altísimas temperaturas de hasta 425 ºC."
+      },
+      {
+        id: 22,
+        question: "¿Cuánto dura exactamente un año (órbita completa alrededor del Sol) en el planeta Mercurio?",
+        options: ["365 días terrestres", "88 días terrestres", "225 días terrestres", "58 días terrestres"],
+        correctIndex: 1,
+        explanation: "Mercurio tiene un año extremadamente corto de tan solo 88 días terrestres por estar muy cerca del Sol."
+      },
+      {
+        id: 23,
+        question: "¿A cuántos días de la Tierra equivale un solo día de Mercurio debido a su lenta velocidad de rotación?",
+        options: ["A 12 días terrestres", "A 58 días terrestres", "A 88 días terrestres", "A 116 días terrestres"],
+        correctIndex: 1,
+        explanation: "Mercurio rota muy lento sobre su eje, por lo que un día equivale a 58 días de nuestro planeta."
+      },
+      {
+        id: 24,
+        question: "¿Cuántos satélites o lunas posee el planeta Mercurio?",
+        options: ["Ninguno", "2 satélites", "1 satélite", "14 satélites"],
+        correctIndex: 0,
+        explanation: "Mercurio es un planeta muy pequeño y no tiene ningún satélite a su alrededor."
+      },
+      {
+        id: 25,
+        question: "¿Qué planeta es el segundo en distancia al Sol y el más similar a la Tierra en tamaño, masa y densidad?",
+        options: ["Marte", "Venus", "Mercurio", "Saturno"],
+        correctIndex: 1,
+        explanation: "Venus es el segundo planeta del sistema y se le considera el gemelo terrestre por masa, tamaño y densidad."
+      },
+      {
+        id: 26,
+        question: "¿Cuánto dura aproximadamente un año en el planeta Venus?",
+        options: ["88 días terrestres", "225 días terrestres", "365 días terrestres", "116 días terrestres"],
+        correctIndex: 1,
+        explanation: "Venus completa su órbita alrededor del Sol en un período equivalente a 225 días de la Tierra."
+      },
+      {
+        id: 27,
+        question: "¿Qué planeta tarda tanto en rotar sobre sí mismo que su día equivale a 116 días de la Tierra?",
+        options: ["Júpiter", "Venus", "Urano", "Marte"],
+        correctIndex: 1,
+        explanation: "Venus es el planeta más lento en girar sobre sí mismo; su día dura 116 días terrestres."
+      },
+      {
+        id: 28,
+        question: "¿Cuál es el planeta más caluroso de todo el sistema solar, superando incluso a Mercurio?",
+        options: ["Júpiter", "Venus", "Marte", "Mercurio"],
+        correctIndex: 1,
+        explanation: "Aunque Mercurio está más cerca del Sol, Venus es el más caluroso debido al calor que retiene su atmósfera."
+      },
+      {
+        id: 29,
+        question: "¿Por qué Venus registra una temperatura promedio mayor que la de Mercurio?",
+        options: ["Porque su rotación es al revés de los demás", "Porque su atmósfera está compuesta por gases que atrapan el calor", "Porque está compuesto por fuego líquido eterno", "Porque tiene 62 satélites que reflejan la luz"],
+        correctIndex: 1,
+        explanation: "Su atmósfera retiene el calor de forma extrema, convirtiéndolo en el planeta más cálido del sistema."
+      },
+      {
+        id: 30,
+        question: "¿De qué componentes químicos se compone de forma principal la densa atmósfera de Venus?",
+        options: ["Nitrógeno, oxígeno y argón", "Dióxido de carbono (CO2), nitrógeno y agua", "Metano, helio y azufre líquido", "Hidrógeno y trazas de helio"],
+        correctIndex: 1,
+        explanation: "La atmósfera de Venus está constituida principalmente por dióxido de carbono, nitrógeno y agua."
+      },
+      {
+        id: 31,
+        question: "¿Qué dos planetas de nuestro sistema solar tienen una rotación al revés (sentido diferente al resto)?",
+        options: ["Mercurio y Marte", "Venus y Urano", "Tierra y Saturno", "Júpiter y Neptuno"],
+        correctIndex: 1,
+        explanation: "Venus y Urano giran en sentido de rotación contrario a todos los demás planetas."
+      },
+      {
+        id: 32,
+        question: "¿Cuál es el único planeta del sistema solar donde se ha comprobado la existencia de seres vivos?",
+        options: ["Marte", "La Tierra", "Venus", "Júpiter"],
+        correctIndex: 1,
+        explanation: "La Tierra es, hasta la fecha, el único cuerpo del sistema solar habitado y con vida conocida."
+      },
+      {
+        id: 33,
+        question: "¿Cuál es el planeta de mayor tamaño dentro del grupo de los planetas rocosos o terrestres?",
+        options: ["Júpiter", "La Tierra", "Marte", "Venus"],
+        correctIndex: 1,
+        explanation: "La Tierra es el más grande de los cuatro planetas terrestres del sistema solar (Mercurio, Venus, Tierra y Marte)."
+      },
+      {
+        id: 34,
+        question: "¿Qué combinación de gases conforma la atmósfera terrestre y ayuda a regular la temperatura para la vida?",
+        options: ["Hidrógeno, helio y argón", "Nitrógeno, oxígeno y argón", "Dióxido de carbono y metano", "Oxígeno, helio y CO2"],
+        correctIndex: 1,
+        explanation: "Nuestra atmósfera está compuesta de nitrógeno, oxígeno y argón, gases ideales para equilibrar el clima."
+      },
+      {
+        id: 35,
+        question: "¿Qué proporción aproximada de la superficie terrestre está compuesta de agua?",
+        options: ["El 50% de la superficie", "El 70% de la superficie", "El 90% de la superficie", "El 30% de la superficie"],
+        correctIndex: 1,
+        explanation: "El 70% de la superficie de la Tierra se encuentra cubierta por agua."
+      },
+      {
+        id: 36,
+        question: "¿Cuánto dura la órbita de nuestro satélite natural, la Luna, alrededor de la Tierra?",
+        options: ["365 días", "28 días", "12 días", "88 días"],
+        correctIndex: 1,
+        explanation: "La Luna completa su traslación síncrona en torno a la Tierra cada 28 días."
+      },
+      {
+        id: 37,
+        question: "¿Qué lugar ocupa la Luna en tamaño si la comparamos con el resto de satélites del sistema solar?",
+        options: ["El primer satélite más grande", "El quinto satélite más grande", "El más pequeño de todos", "El noveno satélite más grande"],
+        correctIndex: 1,
+        explanation: "La Luna es un satélite de gran tamaño, siendo el quinto más grande de todo el sistema solar."
+      },
+      {
+        id: 38,
+        question: "¿Cuáles son las cuatro fases por las que pasa la Luna a lo largo de su ciclo?",
+        options: ["Menguante, creciente, eclipse y llena", "Cuarto creciente, luna llena, cuarto menguante y luna nueva", "Apogeo, perigeo, síncrona y marea alta", "Rotación, traslación, eclipse solar y lunar"],
+        correctIndex: 1,
+        explanation: "El ciclo lunar se compone de cuatro fases: cuarto creciente, luna llena, cuarto menguante y luna nueva."
+      },
+      {
+        id: 39,
+        question: "¿Cuál es el cuarto planeta en distancia al Sol y último de los de tipo rocoso?",
+        options: ["Júpiter", "Marte", "Saturno", "Neptuno"],
+        correctIndex: 1,
+        explanation: "Marte ocupa la cuarta posición en distancia al Sol y marca el final de los planetas terrestres."
+      },
+      {
+        id: 40,
+        question: "¿Por qué Marte tiene su llamativo y característico color rojo?",
+        options: ["Porque está hecho de lava caliente", "Porque su superficie contiene óxido de hierro", "Debido a un reflejo continuo del Sol", "Por las tormentas de metano de su atmósfera"],
+        correctIndex: 1,
+        explanation: "Su suelo rico en óxido de hierro le proporciona un característico color rojo oxidado."
+      },
+      {
+        id: 41,
+        question: "¿De qué gas está compuesta principalmente la atmósfera del planeta Marte?",
+        options: ["Nitrógeno y oxígeno", "Dióxido de carbono", "Helio e hidrógeno", "Metano puro"],
+        correctIndex: 1,
+        explanation: "Marte cuenta con una delgada capa atmosférica formada en su mayoría por dióxido de carbono."
+      },
+      {
+        id: 42,
+        question: "¿Cómo es la temperatura ambiente del planeta Marte si la comparamos con la de la Tierra?",
+        options: ["Muy caliente y árida", "Muy baja, aproximadamente 100 veces menor que en la Tierra", "Exactamente igual a la de la Tierra", "Varía de helada a hirviendo cada hora"],
+        correctIndex: 1,
+        explanation: "Marte es un desierto helado con una temperatura extremadamente baja, 100 veces menor que la de la Tierra."
+      },
+      {
+        id: 43,
+        question: "¿Qué estado físico de agua se ha detectado en Marte y por qué no fluye de manera líquida?",
+        options: ["Vapor de agua, por la baja gravedad", "Hielo, porque las temperaturas son sumamente bajas", "No se ha detectado agua en ninguna forma", "Agua líquida ácida, por los óxidos"],
+        correctIndex: 1,
+        explanation: "Se ha descubierto hielo en Marte, pero el frío extremo impide la presencia de agua líquida en la superficie."
+      },
+      {
+        id: 44,
+        question: "¿Cuáles son los nombres de los dos satélites naturales que orbitan el planeta Marte?",
+        options: ["Tritón y Luna", "Fobos y Deimos", "Ceres y Plutón", "Titán y Europa"],
+        correctIndex: 1,
+        explanation: "Marte cuenta con dos pequeñas lunas llamadas Fobos y Deimos."
+      },
+      {
+        id: 45,
+        question: "¿Cuál es el planeta más antiguo y más grande de todo el sistema solar?",
+        options: ["Saturno", "Júpiter", "Urano", "El Sol"],
+        correctIndex: 1,
+        explanation: "Júpiter destaca por ser el primer planeta en formarse y es el más grande del sistema solar."
+      },
+      {
+        id: 46,
+        question: "¿Qué gases conforman principalmente el cuerpo del colosal Júpiter?",
+        options: ["Metano y nitrógeno helado", "Hidrógeno y helio", "Dióxido de carbono y oxígeno", "Vapor de agua y hierro"],
+        correctIndex: 1,
+        explanation: "Al ser un gigante de gas sin superficie definida, Júpiter se compone de hidrógeno y helio."
+      },
+      {
+        id: 47,
+        question: "¿Cuántos satélites o lunas tiene actualmente descubiertos el coloso Júpiter?",
+        options: ["14 satélites", "69 satélites descubiertos", "62 satélites", "27 satélites"],
+        correctIndex: 1,
+        explanation: "Júpiter lidera el sistema solar con 69 satélites descubiertos hasta la fecha."
+      },
+      {
+        id: 48,
+        question: "¿Cuánto dura un día completo en Júpiter, marcando la rotación más veloz del sistema solar?",
+        options: ["24 horas", "10 horas", "11 horas", "16 horas"],
+        correctIndex: 1,
+        explanation: "Un día en Júpiter dura únicamente 10 horas debido a su altísima velocidad de rotación sobre su eje."
+      },
+      {
+        id: 49,
+        question: "¿Cuánto dura un año en Júpiter, es decir, el tiempo en rodear completamente al Sol?",
+        options: ["29 años terrestres", "12 años de la Tierra", "84 años terrestres", "165 años terrestres"],
+        correctIndex: 1,
+        explanation: "Júpiter recorre su órbita de forma lenta, tardando el equivalente a 12 años de la Tierra en dar la vuelta al Sol."
+      },
+      {
+        id: 50,
+        question: "¿Cuál es el segundo planeta más grande del sistema solar y el sexto en distancia con el Sol?",
+        options: ["Júpiter", "Saturno", "Urano", "Neptuno"],
+        correctIndex: 1,
+        explanation: "Saturno es el sexto planeta del sistema solar y el segundo de mayor diámetro, superado únicamente por Júpiter."
+      }
+    ];
+
+    /**
+     * ============================================================================
+     * MÁQUINA DE ESTADO DE LA SIMULACIÓN Y VARIABLES DE CONTROL
+     * ============================================================================
+     */
+    const State = {
+      // Estado de reproducción de la animación (60 FPS)
+      isRunning: true,
+      // Visibilidad de las etiquetas de texto junto a los planetas
+      showLabels: true,
+      // ID del cuerpo celeste seleccionado actualmente (null, 'sun' o id del planeta)
+      selectedBodyId: null,
+      // ID del cuerpo celeste sobre el que se encuentra el cursor
+      hoveredBodyId: null,
+      // Ángulo de rotación de la Luna alrededor de la Tierra
+      moonAngle: 0,
+      // Factores de escala y centro geométrico para renderizado responsivo
+      scaleRatio: 1,
+      centerX: 450,
+      centerY: 280
+    };
+
+    /**
+     * Inicialización de ángulos iniciales distribuidos para órbitas armoniosas
+     */
+    SOLAR_SYSTEM_DATA.planets.forEach((planet, index) => {
+      // Ángulo orbital inicial theta en radianes (0 a 2*PI)
+      planet.angle = (index * (Math.PI * 2 / 8)) + 0.35;
+      planet.currentX = 0;
+      planet.currentY = 0;
+    });
+
+    /**
+     * Generación procedural de estrellas de fondo estáticas con leve titileo
+     */
+    const STARS = [];
+    const NUM_STARS = 150;
+    for (let i = 0; i < NUM_STARS; i++) {
+      STARS.push({
+        x: Math.random(),
+        y: Math.random(),
+        radius: Math.random() * 1.5 + 0.4,
+        alpha: Math.random() * 0.7 + 0.3,
+        twinkleSpeed: Math.random() * 0.02 + 0.006
+      });
+    }
+
+    /**
+     * Partículas decorativas del cinturón de asteroides entre Marte y Júpiter
+     */
+    const ASTEROIDS = [];
+    const NUM_ASTEROIDS = 85;
+    for (let i = 0; i < NUM_ASTEROIDS; i++) {
+      ASTEROIDS.push({
+        angle: Math.random() * Math.PI * 2,
+        distanceOffset: (Math.random() - 0.5) * 18,
+        radius: Math.random() * 1.2 + 0.4,
+        speed: Math.random() * 0.003 + 0.009,
+        alpha: Math.random() * 0.4 + 0.25
+      });
+    }
+
+    /**
+     * ============================================================================
+     * CONFIGURACIÓN DEL CANVAS Y RENDERIZADO CONTINUO A 60 FPS
+     * ============================================================================
+     */
+    const canvas = document.getElementById("solarCanvas");
+    const ctx = canvas.getContext("2d");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+
+    /**
+     * Ajuste responsivo de la resolución interna del Canvas (Hi-DPI)
+     */
+    function resizeCanvas() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+
+      State.centerX = rect.width / 2;
+      State.centerY = rect.height / 2;
+
+      // Factor de escala calculado respecto a la dimensión menor
+      const baseDimension = Math.min(rect.width, rect.height * 1.4);
+      State.scaleRatio = Math.max(0.48, Math.min(1.05, baseDimension / 620));
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+
+    /**
+     * Dibuja el fondo de estrellas estáticas con optimización matemática
+     */
+    function drawBackground(width, height) {
+      ctx.fillStyle = "#030712";
+      ctx.fillRect(0, 0, width, height);
+
+      STARS.forEach((star) => {
+        const flicker = Math.sin(Date.now() * star.twinkleSpeed) * 0.2;
+        const currentAlpha = Math.min(1, Math.max(0.1, star.alpha + flicker));
+        
+        ctx.beginPath();
+        ctx.arc(star.x * width, star.y * height, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+        ctx.fill();
+      });
+    }
+
+    /**
+     * Dibuja las órbitas visibles con líneas punteadas (setLineDash)
+     */
+    function drawOrbits() {
+      const cx = State.centerX;
+      const cy = State.centerY;
+      const scale = State.scaleRatio;
+
+      SOLAR_SYSTEM_DATA.planets.forEach((planet) => {
+        const orbitRadius = planet.orbitRadius * scale;
+        
+        ctx.save();
+        ctx.beginPath();
+        // Línea punteada fina para una visualización astronómica elegante
+        ctx.setLineDash([3, 5]);
+        ctx.arc(cx, cy, orbitRadius, 0, Math.PI * 2);
+        
+        if (State.selectedBodyId === planet.id) {
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.65)";
+          ctx.lineWidth = 1.6;
+        } else {
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+          ctx.lineWidth = 0.8;
+        }
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Cinturón de asteroides entre Marte (136) y Júpiter (180) -> Radio medio ~158
+      const beltBaseRadius = 158 * scale;
+      ASTEROIDS.forEach((ast) => {
+        if (State.isRunning) {
+          ast.angle += ast.speed;
+        }
+        const r = beltBaseRadius + ast.distanceOffset * scale;
+        const ax = cx + Math.cos(ast.angle) * r;
+        const ay = cy + Math.sin(ast.angle) * r;
+
+        ctx.beginPath();
+        ctx.arc(ax, ay, ast.radius * scale, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180, 185, 200, ${ast.alpha})`;
+        ctx.fill();
+      });
+    }
+
+    /**
+     * Dibuja el Sol central con su corona brillante y gradiente radial
+     */
+    function drawSun() {
+      const cx = State.centerX;
+      const cy = State.centerY;
+      const scale = State.scaleRatio;
+      const sunRadius = SOLAR_SYSTEM_DATA.sun.radius * scale;
+
+      // Resplandor exterior (Corona solar brillante)
+      const glowGradient = ctx.createRadialGradient(cx, cy, sunRadius * 0.3, cx, cy, sunRadius * 2.7);
+      glowGradient.addColorStop(0, "rgba(251, 191, 36, 0.9)");
+      glowGradient.addColorStop(0.5, "rgba(245, 158, 11, 0.35)");
+      glowGradient.addColorStop(1, "rgba(245, 158, 11, 0)");
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, sunRadius * 2.7, 0, Math.PI * 2);
+      ctx.fillStyle = glowGradient;
+      ctx.fill();
+
+      // Indicador visual si el Sol está seleccionado
+      if (State.selectedBodyId === "sun") {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, sunRadius + 7, 0, Math.PI * 2);
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Núcleo del Sol con gradiente esférico
+      const coreGradient = ctx.createRadialGradient(cx - sunRadius * 0.3, cy - sunRadius * 0.3, 1, cx, cy, sunRadius);
+      coreGradient.addColorStop(0, "#fffbeb");
+      coreGradient.addColorStop(0.3, "#fef08a");
+      coreGradient.addColorStop(0.8, "#f59e0b");
+      coreGradient.addColorStop(1, "#d97706");
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, sunRadius, 0, Math.PI * 2);
+      ctx.fillStyle = coreGradient;
+      ctx.shadowColor = "#f59e0b";
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Etiqueta del Sol
+      if (State.showLabels) {
+        ctx.font = `bold ${Math.max(10, 11 * scale)}px sans-serif`;
+        ctx.fillStyle = "#fef08a";
+        ctx.textAlign = "center";
+        ctx.fillText("Sol", cx, cy + sunRadius + 14 * scale);
+      }
+    }
+
+    /**
+     * Dibuja los 8 planetas y actualiza sus posiciones trigonométricas
+     * aplicando la matemática orbital:
+     * x = centroX + radio * cos(ángulo)
+     * y = centroY + radio * sin(ángulo)
+     */
+    function drawPlanets() {
+      const cx = State.centerX;
+      const cy = State.centerY;
+      const scale = State.scaleRatio;
+
+      SOLAR_SYSTEM_DATA.planets.forEach((planet) => {
+        if (State.isRunning) {
+          planet.angle += planet.speed;
+          if (planet.angle > Math.PI * 2) {
+            planet.angle -= Math.PI * 2;
+          }
+        }
+
+        const orbitDist = planet.orbitRadius * scale;
+        const px = cx + Math.cos(planet.angle) * orbitDist;
+        const py = cy + Math.sin(planet.angle) * orbitDist;
+
+        // Almacenamos coordenadas actuales para detección precisa de interacción
+        planet.currentX = px;
+        planet.currentY = py;
+
+        const pRadius = planet.radius * scale;
+        const isSelected = State.selectedBodyId === planet.id;
+        const isHovered = State.hoveredBodyId === planet.id;
+
+        // Halo de selección
+        if (isSelected || isHovered) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, py, pRadius + (isSelected ? 5 * scale : 3 * scale), 0, Math.PI * 2);
+          ctx.strokeStyle = isSelected ? "#38bdf8" : "rgba(255, 255, 255, 0.6)";
+          ctx.lineWidth = isSelected ? 2 : 1;
+          if (isSelected) ctx.setLineDash([3, 3]);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Anillos distintivos de Saturno
+        if (planet.hasRings && planet.id === "saturno") {
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(-0.35);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, pRadius * 2.3, pRadius * 0.65, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(226, 195, 145, 0.75)";
+          ctx.lineWidth = 3.5 * scale;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Cuerpo esférico del planeta con volumen 3D sombreado
+        const grad = ctx.createRadialGradient(
+          px - pRadius * 0.35,
+          py - pRadius * 0.35,
+          pRadius * 0.1,
+          px,
+          py,
+          pRadius
+        );
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.3, planet.color);
+        grad.addColorStop(1, "#0f172a");
+
+        ctx.beginPath();
+        ctx.arc(px, py, pRadius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Renderizado especial de la Luna orbitando la Tierra
+        if (planet.hasMoon && planet.id === "tierra") {
+          if (State.isRunning) {
+            State.moonAngle += 0.06;
+          }
+          const moonDist = (pRadius + 6) * scale;
+          const mx = px + Math.cos(State.moonAngle) * moonDist;
+          const my = py + Math.sin(State.moonAngle) * moonDist;
+
+          ctx.beginPath();
+          ctx.arc(mx, my, 1.8 * scale, 0, Math.PI * 2);
+          ctx.fillStyle = "#e2e8f0";
+          ctx.fill();
+        }
+
+        // Etiquetas textuales de nombres
+        if (State.showLabels) {
+          ctx.font = `${Math.max(9, 10.5 * scale)}px sans-serif`;
+          ctx.fillStyle = isSelected ? "#38bdf8" : "#cbd5e1";
+          ctx.textAlign = "center";
+          ctx.fillText(planet.name, px, py + pRadius + 12 * scale);
+        }
+      });
+    }
+
+    /**
+     * BUCLE PRINCIPAL DE ANIMACIÓN A 60 FPS
+     */
+    function animationLoop() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      drawBackground(rect.width, rect.height);
+      drawOrbits();
+      drawSun();
+      drawPlanets();
+
+      requestAnimationFrame(animationLoop);
+    }
+
+    /**
+     * ============================================================================
+     * DETECCIÓN DE INTERACCIÓN (CLICS Y MOVIMIENTO DEL MOUSE EN CANVAS)
+     * ============================================================================
+     */
+    function getBodyAtCoords(mouseX, mouseY) {
+      const scale = State.scaleRatio;
+      const cx = State.centerX;
+      const cy = State.centerY;
+
+      // 1. Detección de colisión con el Sol
+      const distToSun = Math.hypot(mouseX - cx, mouseY - cy);
+      const sunHitRadius = (SOLAR_SYSTEM_DATA.sun.radius + 10) * scale;
+      if (distToSun <= Math.max(22, sunHitRadius)) {
+        return SOLAR_SYSTEM_DATA.sun;
+      }
+
+      // 2. Detección de colisión con los planetas (con margen cómodo para pantallas táctiles)
+      for (const planet of SOLAR_SYSTEM_DATA.planets) {
+        const distToPlanet = Math.hypot(mouseX - planet.currentX, mouseY - planet.currentY);
+        const hitRadius = Math.max(14, (planet.radius + 8) * scale);
+        if (distToPlanet <= hitRadius) {
+          return planet;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Abre y rellena la tarjeta de información lateral con los datos técnicos
+     */
+    function openPlanetDetail(body) {
+      // a) Pausa la animación orbital
+      State.isRunning = false;
+      updatePlayButtonUI();
+
+      // b) Resalta el planeta seleccionado en el lienzo
+      State.selectedBodyId = body.id;
+
+      // c) Muestra los detalles en la Tarjeta de Información (Side Panel)
+      document.getElementById("emptyPanelState").style.display = "none";
+      const detailContainer = document.getElementById("planetDetailContent");
+      detailContainer.style.display = "block";
+
+      document.getElementById("planetDetailName").textContent = body.name;
+      document.getElementById("planetDetailType").textContent = body.type;
+
+      // Avatar con estilo del planeta
+      const avatar = document.getElementById("planetAvatarPreview");
+      avatar.style.backgroundColor = body.color;
+      if (body.hasRings) {
+        avatar.classList.add("has-rings");
+      } else {
+        avatar.classList.remove("has-rings");
+      }
+
+      document.getElementById("statDistance").textContent = body.order;
+      document.getElementById("statSize").textContent = body.size;
+      document.getElementById("statYear").textContent = body.year;
+      document.getElementById("statDay").textContent = body.day;
+      document.getElementById("statMoons").textContent = body.moons;
+
+      // Cargar los 3 datos curiosos
+      const factsList = document.getElementById("planetFunFactsList");
+      factsList.innerHTML = "";
+      body.funFacts.forEach((fact) => {
+        const li = document.createElement("li");
+        li.textContent = fact;
+        factsList.appendChild(li);
+      });
+
+      // Actualizar chips de la barra rápida
+      document.querySelectorAll(".planet-chip").forEach((chip) => {
+        chip.classList.toggle("selected", chip.dataset.id === body.id);
+      });
+    }
+
+    /**
+     * Cierra el panel lateral y reanuda la simulación
+     */
+    function closePlanetDetail() {
+      State.selectedBodyId = null;
+      document.getElementById("planetDetailContent").style.display = "none";
+      document.getElementById("emptyPanelState").style.display = "flex";
+
+      document.querySelectorAll(".planet-chip").forEach((chip) => {
+        chip.classList.remove("selected");
+      });
+
+      // Reanuda la animación
+      State.isRunning = true;
+      updatePlayButtonUI();
+    }
+
+    /**
+     * Eventos del Canvas para clics y toque en móvil
+     */
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const clickedBody = getBodyAtCoords(mouseX, mouseY);
+      if (clickedBody) {
+        openPlanetDetail(clickedBody);
+      }
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const hovered = getBodyAtCoords(mouseX, mouseY);
+      State.hoveredBodyId = hovered ? hovered.id : null;
+      canvas.style.cursor = hovered ? "pointer" : "crosshair";
+    });
+
+    /**
+     * ============================================================================
+     * CONTROLES DE LA SIMULACIÓN
+     * ============================================================================
+     */
+    const btnTogglePlay = document.getElementById("btnTogglePlay");
+    const btnPlayIcon = document.getElementById("btnPlayIcon");
+    const btnToggleLabels = document.getElementById("btnToggleLabels");
+    const btnClosePanel = document.getElementById("btnClosePanel");
+
+    function updatePlayButtonUI() {
+      if (State.isRunning) {
+        btnPlayIcon.textContent = "⏸️";
+        btnTogglePlay.classList.remove("active");
+      } else {
+        btnPlayIcon.textContent = "▶️";
+        btnTogglePlay.classList.add("active");
+      }
+    }
+
+    btnTogglePlay.addEventListener("click", () => {
+      State.isRunning = !State.isRunning;
+      updatePlayButtonUI();
+    });
+
+    btnToggleLabels.addEventListener("click", () => {
+      State.showLabels = !State.showLabels;
+      btnToggleLabels.classList.toggle("active", State.showLabels);
+    });
+
+    btnClosePanel.addEventListener("click", () => {
+      closePlanetDetail();
+    });
+
+    /**
+     * Generación de la barra de acceso rápido con los 8 planetas y el Sol
+     */
+    const planetSelectorBar = document.getElementById("planetSelectorBar");
+
+    // Botón del Sol
+    const sunChip = document.createElement("button");
+    sunChip.className = "planet-chip";
+    sunChip.dataset.id = "sun";
+    sunChip.innerHTML = `<span class="dot" style="background-color: #fbbf24;"></span> Sol`;
+    sunChip.addEventListener("click", () => openPlanetDetail(SOLAR_SYSTEM_DATA.sun));
+    planetSelectorBar.appendChild(sunChip);
+
+    // Botones de los 8 planetas
+    SOLAR_SYSTEM_DATA.planets.forEach((planet) => {
+      const chip = document.createElement("button");
+      chip.className = "planet-chip";
+      chip.dataset.id = planet.id;
+      chip.innerHTML = `<span class="dot" style="background-color: ${planet.color};"></span> ${planet.name}`;
+      chip.addEventListener("click", () => openPlanetDetail(planet));
+      planetSelectorBar.appendChild(chip);
+    });
+
+    /**
+     * ============================================================================
+     * QUIZ EDUCATIVO: "¡DESAFÍO ESPACIAL!" CON SELECCIÓN DINÁMICA DE 10 PREGUNTAS
+     * Extraídas y mezcladas aleatoriamente del banco de 50 preguntas.
+     * ============================================================================
+     */
+    let currentQuizQuestions = [];
+    let userAnswers = {};
+    let correctCount = 0;
+
+    const questionsContainer = document.getElementById("questionsContainer");
+    const scoreValueDisplay = document.getElementById("scoreValueDisplay");
+    const quizProgressFill = document.getElementById("quizProgressFill");
+    const quizFinalFeedback = document.getElementById("quizFinalFeedback");
+    const btnRetryQuiz = document.getElementById("btnRetryQuiz");
+
+    /**
+     * Algoritmo matemático para barajar y extraer exactamente 10 preguntas
+     * del banco de 50 preguntas disponibles.
+     */
+    function initializeQuiz() {
+      // 1. Barajar el banco de 50 preguntas usando orden aleatorio
+      const shuffled = [...QUESTIONS_POOL_50].sort(() => Math.random() - 0.5);
+      
+      // 2. Extraer exactamente 10 preguntas
+      currentQuizQuestions = shuffled.slice(0, 10);
+      userAnswers = {};
+      correctCount = 0;
+
+      // 3. Reiniciar contadores de la interfaz
+      scoreValueDisplay.textContent = "Aciertos: 0 / 10";
+      quizProgressFill.style.width = "0%";
+      quizFinalFeedback.textContent = "Responde a las 10 preguntas para obtener tu calificación estelar.";
+
+      // 4. Renderizar las 10 preguntas
+      renderQuizQuestions();
+    }
+
+    /**
+     * Renderiza las 10 preguntas activas en el DOM
+     */
+    function renderQuizQuestions() {
+      questionsContainer.innerHTML = "";
+
+      currentQuizQuestions.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `qCard_${index}`;
+
+        const letters = ["A", "B", "C", "D"];
+
+        let optionsHtml = "";
+        q.options.forEach((opt, optIndex) => {
+          optionsHtml += `
+            <button class="option-btn" id="btn_${index}_${optIndex}" onclick="handleAnswer(${index}, ${optIndex})">
+              <span class="option-letter">${letters[optIndex]}</span>
+              <span>${opt}</span>
+            </button>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="question-head">
+            <span class="question-number">Pregunta ${index + 1}</span>
+            <p class="question-text">${q.question}</p>
+          </div>
+          <div class="options-grid">
+            ${optionsHtml}
+          </div>
+          <div class="explanation-box" id="exp_${index}"></div>
+        `;
+
+        questionsContainer.appendChild(card);
+      });
+    }
+
+    /**
+     * Maneja la selección de respuesta con retroalimentación inmediata
+     */
+    window.handleAnswer = function(questionIndex, chosenOptionIndex) {
+      if (userAnswers[questionIndex] !== undefined) return; // Evitar responder dos veces
+
+      userAnswers[questionIndex] = chosenOptionIndex;
+      const question = currentQuizQuestions[questionIndex];
+      const isCorrect = (chosenOptionIndex === question.correctIndex);
+
+      if (isCorrect) {
+        correctCount++;
+      }
+
+      const card = document.getElementById(`qCard_${questionIndex}`);
+      const explanationBox = document.getElementById(`exp_${questionIndex}`);
+      const chosenBtn = document.getElementById(`btn_${questionIndex}_${chosenOptionIndex}`);
+      const correctBtn = document.getElementById(`btn_${questionIndex}_${question.correctIndex}`);
+
+      // Deshabilitar todos los botones de la pregunta respondida
+      question.options.forEach((_, idx) => {
+        const b = document.getElementById(`btn_${questionIndex}_${idx}`);
+        b.disabled = true;
+      });
+
+      if (isCorrect) {
+        card.classList.add("answered-correct");
+        chosenBtn.classList.add("correct-choice");
+        explanationBox.className = "explanation-box correct";
+        explanationBox.innerHTML = `<strong>✅ ¡Excelente y Correcto!</strong><p>${question.explanation}</p>`;
+      } else {
+        card.classList.add("answered-incorrect");
+        chosenBtn.classList.add("wrong-choice");
+        correctBtn.classList.add("correct-choice");
+        explanationBox.className = "explanation-box incorrect";
+        explanationBox.innerHTML = `<strong>❌ Respuesta Incorrecta (La correcta era la opción ${["A", "B", "C", "D"][question.correctIndex]})</strong><p>${question.explanation}</p>`;
+      }
+
+      // Actualizar contador y progreso
+      const totalAnswered = Object.keys(userAnswers).length;
+      scoreValueDisplay.textContent = `Aciertos: ${correctCount} / 10`;
+      quizProgressFill.style.width = `${(totalAnswered / 10) * 100}%`;
+
+      // Mensaje final si se completaron las 10 preguntas
+      if (totalAnswered === 10) {
+        if (correctCount >= 9) {
+          quizFinalFeedback.innerHTML = `🎉 <strong>¡Rango: Comandante Espacial de Élite!</strong> Has acertado ${correctCount}/10 preguntas. ¡Conoces el Sistema Solar a la perfección!`;
+        } else if (correctCount >= 6) {
+          quizFinalFeedback.innerHTML = `🚀 <strong>¡Rango: Astronauta Experto!</strong> Has acertado ${correctCount}/10 preguntas. ¡Gran trabajo explorando el cosmos!`;
+        } else {
+          quizFinalFeedback.innerHTML = `🌟 <strong>¡Rango: Cadete Espacial!</strong> Has acertado ${correctCount}/10 preguntas. Revisa la simulación e inténtalo de nuevo con nuevas preguntas.`;
+        }
+      }
+    };
+
+    // Botón de reintento: Selecciona 10 nuevas preguntas aleatorias del banco de 50
+    btnRetryQuiz.addEventListener("click", () => {
+      initializeQuiz();
+      document.getElementById("quizSection").scrollIntoView({ behavior: "smooth" });
+    });
+
+    /**
+     * ============================================================================
+     * INICIALIZACIÓN GENERAL DE LA APLICACIÓN
+     * ============================================================================
+     */
+    window.addEventListener("DOMContentLoaded", () => {
+      resizeCanvas();
+      initializeQuiz();
+      animationLoop();
+    });
+  </script>
+</body>
+</html>
