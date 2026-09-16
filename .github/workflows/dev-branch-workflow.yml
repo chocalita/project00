@@ -1,0 +1,17 @@
+name: Develop Branch X Workflow
+
+on:
+  workflow_dispatch:
+    branches:
+      - develop
+
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Greeting
+        run: echo "Hello Develop World!"
+
+      - name: Print Goodbye
+        run: echo "Done - Bye!"
