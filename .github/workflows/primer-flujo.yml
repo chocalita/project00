@@ -1,13 +1,17 @@
 name: First Workflow
-on: 
-  workflow_dispatch:  # Allows manual triggering of this workflow
+
+on:
+  workflow_dispatch:
     branches:
-      - "develop"
+      - develop
+
 jobs:
   first-job:
-    runs-on: ubuntu-latest   # Runner environment provided by GitHub
+    runs-on: ubuntu-latest
+
     steps:
       - name: Print Greeting
         run: echo "Hello World!"
+
       - name: Print Goodbye
         run: echo "Done - Bye!"
