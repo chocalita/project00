@@ -1,0 +1,17 @@
+name: Schedule Workflow
+
+on:
+  schedule:
+    - cron: '7 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Greeting
+        run: echo "Hello Schedule World!"
+
+      - name: Print Goodbye
+        run: echo "Done Schedule Task- Bye!"
