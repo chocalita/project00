@@ -1,0 +1,15 @@
+name: Test direct Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Greeting
+        run: echo "Hello Test Direct World!"
+
+      - name: Print Goodbye
+        run: echo "Done - Bye!"
