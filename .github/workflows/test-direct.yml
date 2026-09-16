@@ -1,4 +1,4 @@
-name: Test direct Workflow
+name: Test Direct Workflow
 
 on:
   push:
