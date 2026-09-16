@@ -1,0 +1,17 @@
+name: Develop Push Workflow
+
+on:
+  schedule:
+    - cron: '45 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Greeting
+        run: echo "Hello Cron World!"
+
+      - name: Print Goodbye
+        run: echo "Done Cron Task- Bye!"
