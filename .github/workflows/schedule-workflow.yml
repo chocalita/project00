@@ -2,8 +2,11 @@ name: Schedule Workflow
 
 on:
   schedule:
-    - cron: '10 2 * * *'
+    - cron: '19 2 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   first-job:
@@ -15,3 +18,32 @@ jobs:
 
       - name: Print Goodbye
         run: echo "Done Schedule Task- Bye!"
+
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "Bot CI/CD"
+          git config user.email "botcicd@yecid.com"
+
+      - name: Fetch and Merge
+        id: merge_step
+        run: |
+          git fetch origin
+          git checkout feature/uploads
+          git pull origin feature/uploads
+
+          if git merge origin/develop --no-commit --no-ff; then
+            git commit -m "Auto-merge develop into feature/uploads"
+            git push origin feature/uploads
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            git merge --abort
+            echo "status=conflict" >> $GITHUB_OUTPUT
+          fi
