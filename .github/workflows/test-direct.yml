@@ -15,4 +15,4 @@ jobs:
         run: echo "Hello Test Direct World!"
 
       - name: Print Goodbye
-        run: echo "Done - Bye!"
+        run: echo "Done Test Direct - Bye!"
