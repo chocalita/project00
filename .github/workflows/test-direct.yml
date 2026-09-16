@@ -1,6 +1,9 @@
 name: Test direct Workflow
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 jobs:
