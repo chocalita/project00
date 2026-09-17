@@ -31,14 +31,18 @@ jobs:
 
       - name: Fetch and Merge
         id: merge_step
+        env:
+          SOURCE_BRANCH: "develop"
+          TARGET_BRANCH: "feature/uploads"
         run: |
           git fetch origin
-          git checkout feature/uploads
-          git pull origin feature/uploads
+          git checkout $TARGET_BRANCH
+          git pull origin $TARGET_BRANCH
 
-          if git merge origin/develop --no-commit --no-ff; then
-            git commit -m "Auto-merge develop into feature/uploads"
-            git push origin feature/uploads
+          if git merge origin/$SOURCE_BRANCH --no-commit --no-ff; then
+            git commit -m "Auto-merge $SOURCE_BRANCH into $TARGET_BRANCH"
+            git push origin $TARGET_BRANCH
+            $DIFF_SUMMARY=$(git diff --stat origin/$SOURCE_BRANCH..$TARGET_BRANCH | tr '\n' ' ')
             echo "status=success" >> $GITHUB_OUTPUT
           else
             git merge --abort
@@ -64,6 +68,6 @@ jobs:
           TARGET_BRANCH: "feature/uploads"
         run: |
           curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Manual merge required.\n*Source:* \`develop\`\n*Target:* \`feature/uploads\`\n*Archivos con conflicto:*\n\`\`\`XX\`\`\`\"}" \
+              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Manual merge required.\n*Source:* \`$SOURCE_BRANCH\`\n*Target:* \`$TARGET_BRANCH\`\n*Archivos con conflicto:*\n\`\`\`XX\`\`\`\"}" \
               $SLACK_WEBHOOK_URL
  
