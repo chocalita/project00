@@ -14,10 +14,7 @@ jobs:
 
     steps:
       - name: Print Greeting
-        run: echo "Hello Slack World!"
-
-      - name: Print Goodbye
-        run: echo "Done Slack Task- Bye!"
+        run: echo "Start to try the merge!"
 
   auto-merge:
     runs-on: ubuntu-latest
@@ -48,13 +45,25 @@ jobs:
             echo "status=conflict" >> $GITHUB_OUTPUT
           fi
           
-      - name: Send message to Slack Workflow
+      - name: Merge successt message to Slack Workflow
+        if: steps.merge_step.outputs.status == 'success'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SOURCE_BRANCH: "develop"
           TARGET_BRANCH: "feature/uploads"
         run: |
           curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Se requiere merge manual.\n*Source:* \`develop\`\n*Target:* \`feature/uploads\`\n*Archivos con conflicto:*\n\`\`\`XX\`\`\`\"}" \
+              --data "{\"text\":\"✅ *[MERGE DONE]* Branch merge completed successfully!\n*Source:* \`$SOURCE_BRANCH\`\n*Target:* \`$TARGET_BRANCH\`\n*Comparison summary:* \`\`\`$DIFF_SUMMARY\`\`\`\"}" \
+              $SLACK_WEBHOOK_URL
+
+       - name: Send Conflict message to Slack Workflow
+        if: steps.merge_step.outputs.status == 'conflict'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SOURCE_BRANCH: "develop"
+          TARGET_BRANCH: "feature/uploads"
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Manual merge required.\n*Source:* \`develop\`\n*Target:* \`feature/uploads\`\n*Archivos con conflicto:*\n\`\`\`XX\`\`\`\"}" \
               $SLACK_WEBHOOK_URL
  
