@@ -1,4 +1,4 @@
-name: Slack Workflow
+name: Merge to Slack Workflow
 
 on:
   schedule:
@@ -17,6 +17,7 @@ jobs:
 
   auto-merge:
     runs-on: ubuntu-latest
+    needs: first-job
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_ACTIONS }}
       SOURCE_BRANCH: "develop"
@@ -50,14 +51,14 @@ jobs:
             echo "status=conflict" >> $GITHUB_OUTPUT
           fi
           
-      - name: Merge successt message to Slack Workflow
+      - name: Merge success message to Slack Workflow
         if: steps.merge_step.outputs.status == 'success'
         run: |
           curl -X POST -H 'Content-type: application/json' \
               --data "{\"text\":\"✅ *[MERGE DONE]* Branch merge completed successfully!\n*Source Branch:* \`$SOURCE_BRANCH\`\n*Target Branch:* \`$TARGET_BRANCH\`\n*Comparison Summary:* \`\`\`$DIFF_SUMMARY\`\`\`\"}" \
               $SLACK_WEBHOOK_URL
 
-       - name: Send Conflict message to Slack Workflow
+      - name: Send Conflict message to Slack Workflow
         if: steps.merge_step.outputs.status == 'conflict'
         run: |
           curl -X POST -H 'Content-type: application/json' \
