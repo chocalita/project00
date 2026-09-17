@@ -1,4 +1,4 @@
-name: Test Direct Workflow 012345
+name: Test Direct Workflow 0123456
 
 on:
   push:
