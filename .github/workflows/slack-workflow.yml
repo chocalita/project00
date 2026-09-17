@@ -43,11 +43,13 @@ jobs:
           if git merge origin/$SOURCE_BRANCH --no-commit --no-ff; then
             git commit -m "Auto-merge $SOURCE_BRANCH into $TARGET_BRANCH"
             git push origin $TARGET_BRANCH
-            DIFF_SUMMARY=$(git diff --stat origin/$SOURCE_BRANCH..$TARGET_BRANCH | tr '\n' ' ')
+            DIFF_SUMMARY=$(git diff --name-status origin/$SOURCE_BRANCH..$TARGET_BRANCH | sed ':a;N;$!ba;s/\n/\\n/g')            
             echo "DIFF_SUMMARY=$DIFF_SUMMARY" >> "$GITHUB_ENV"
             echo "status=success" >> $GITHUB_OUTPUT
           else
+            CONFLICT_FILES=$(git diff --name-only --diff-filter=U | sed ':a;N;$!ba;s/\n/\\n/g')
             git merge --abort
+            echo "CONFLICT_FILES=$CONFLICT_FILES" >> "$GITHUB_ENV"
             echo "status=conflict" >> $GITHUB_OUTPUT
           fi
           
@@ -55,13 +57,12 @@ jobs:
         if: steps.merge_step.outputs.status == 'success'
         run: |
           curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"✅ *[MERGE DONE]* Branch merge completed successfully!\n*Source Branch:* \`$SOURCE_BRANCH\`\n*Target Branch:* \`$TARGET_BRANCH\`\n*Comparison Summary:* \`\`\`$DIFF_SUMMARY\`\`\`\"}" \
+              --data "{\"text\":\"✅ *[MERGE DONE]* Branch merge completed successfully!\n*Source Branch:* \`$SOURCE_BRANCH\`\n*Target Branch:* \`$TARGET_BRANCH\`\n\n*Comparisson Summary (Target vs Source):*\n\`\`\`$DIFF_SUMMARY\`\`\`\"}" \
               $SLACK_WEBHOOK_URL
 
       - name: Send Conflict message to Slack Workflow
         if: steps.merge_step.outputs.status == 'conflict'
         run: |
           curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Manual merge required.\n*Source Branch:* \`$SOURCE_BRANCH\`\n*Target Branch:* \`$TARGET_BRANCH\`\n*Conflicting Files:*\n\`\`\`XX\`\`\`\"}" \
+              --data "{\"text\":\"🚨 *[MERGE CONFLICT ALERT]* Manual merge required.\n*Source Branch:* \`$SOURCE_BRANCH\`\n*Target Branch:* \`$TARGET_BRANCH\`\n\n*Conflicting Files:*\n\`\`\`$CONFLICT_FILES\`\`\`\"}" \
               $SLACK_WEBHOOK_URL
- 
