@@ -44,6 +44,18 @@ jobs:
             git commit -m "Auto-merge $SOURCE_BRANCH into $TARGET_BRANCH"
             git push origin $TARGET_BRANCH
             DIFF_SUMMARY=$(git diff --name-status origin/$SOURCE_BRANCH..$TARGET_BRANCH | sed ':a;N;$!ba;s/\n/\\n/g')            
+            # Capture Status (M, A, D) + Impact (+/-) by every file
+            DIFF_FILES=$(git diff --name-status origin/$SOURCE_BRANCH..$TARGET_BRANCH | while read status file; do
+              # Calculate added and deleted lines foe each file
+              numstat=$(git diff --numstat origin/$SOURCE_BRANCH..$TARGET_BRANCH -- "$file")
+              added=$(echo "$numstat" | awk '{print $1}')
+              deleted=$(echo "$numstat" | awk '{print $2}')
+              # If the file is binary o without number, asign default 0
+              added=${added:-0}
+              deleted=${deleted:-0}
+              # Output format: STATUS (+ADD/-DEL) PATH
+              printf "%-2s (+%-3s / -%-3s) %s\n" "$status" "$added" "$deleted" "$file"
+            done | sed ':a;N;$!ba;s/\n/\\n/g')
             echo "DIFF_SUMMARY=$DIFF_SUMMARY" >> "$GITHUB_ENV"
             echo "status=success" >> $GITHUB_OUTPUT
           else
