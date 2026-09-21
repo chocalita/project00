@@ -4,7 +4,17 @@ on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
-
+    inputs:
+      source_branch:
+        description: 'Source branch'
+        required: true
+        default: 'develop'
+        type: string
+      target_branch:
+        description: 'Target branch'
+        required: true
+        default: 'feature/uploads'
+        type: string
 permissions:
   contents: write
 
@@ -20,8 +30,8 @@ jobs:
     needs: first-job
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_ACTIONS }}
-      SOURCE_BRANCH: "develop"
-      TARGET_BRANCH: "feature/uploads"
+      SOURCE_BRANCH: ${{ inputs.source_branch || 'develop' }}
+      TARGET_BRANCH: ${{ inputs.target_branch || 'feature/uploads' }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
