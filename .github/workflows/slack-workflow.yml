@@ -2,7 +2,7 @@ name: Merge to Slack Workflow
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:
     inputs:
       source_branch:
